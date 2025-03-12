@@ -1,0 +1,29 @@
+{
+    "editor.formatOnSave": true,
+    "editor.codeActionsOnSave": {
+      "source.fixAll.eslint": "explicit"
+    },
+    "[prisma]": {
+      "editor.defaultFormatter": "Prisma.prisma",
+      "editor.formatOnSave": true
+    },
+    "eslint.workingDirectories": [
+      {
+        "mode": "auto"
+      }
+    ],
+    "typescript.tsdk": "./node_modules/typescript/lib",
+    "editor.quickSuggestions": {
+      "strings": "on"
+    },
+    "tailwindCSS.experimental.classRegex": [
+      "[a-zA-Z]*ClassName='([^']+)'",
+      "[a-zA-Z]*ClassName=\"([^\"]+)\"",
+      "[a-zA-Z]*ClassName={`([^`]+)`}",
+      "[a-zA-Z]*ClassNames='([^']+)'",
+      "[a-zA-Z]*ClassNames=\"([^\"]+)\"",
+      "[a-zA-Z]*ClassNames={`([^`]+)`}",
+      "classes\\s*=\\s*{{[^}]*['\"`]{1}([^'\"`]*)['\"`]{1}"
+    ]
+  }
+  
