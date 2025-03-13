@@ -12,6 +12,33 @@ export default async function Page() {
 
   const session = await auth();
 
+  const connectedItems = [
+    {
+      bankName: "Chase",
+      accountName: "Checking",
+      balance: 1000,
+      currency: "USD",
+    },
+    {
+      bankName: "Chase",
+      accountName: "Savings",
+      balance: 5000,
+      currency: "USD",
+    },
+    {
+      bankName: "Wells Fargo",
+      accountName: "Checking",
+      balance: 2000,
+      currency: "USD",
+    },
+    {
+      bankName: "Wells Fargo",
+      accountName: "Savings",
+      balance: 3000,
+      currency: "USD",
+    },
+  ];
+
   return (
     <div className="min-h-screen bg-gradient-to-b from-gray-50 to-white">
       <header className="fixed top-0 left-0 right-0 bg-white/80 backdrop-blur-sm border-b border-gray-100 z-10">
@@ -24,10 +51,12 @@ export default async function Page() {
       </header>
 
       <main className="max-w-4xl mx-auto px-4 pt-24 pb-16">
-        <div className="text-center mb-16">
-          <h1 className="text-5xl font-bold mb-4 bg-clip-text text-transparent bg-gradient-to-r from-gray-900 via-gray-800 to-gray-900 font-[family-name:var(--font-geist-sans)]">
-            Transaction Map
-          </h1>
+        <div className="flex">
+          {connectedItems.map((item, index) => (
+            <div key={index} className="w-1/2 p-4">
+              {item.accountName}
+            </div>
+          ))}
         </div>
       </main>
     </div>
