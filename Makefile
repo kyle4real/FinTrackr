@@ -4,7 +4,13 @@ docker-setup:
 docker-down:
 	docker-compose down
 
-start: docker-setup
+install:
+	npm install
+
+generate-prisma:
+	npx prisma generate
+
+start: install docker-setup generate-prisma
 	npm run dev
 
 stop: docker-down
