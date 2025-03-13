@@ -1,6 +1,12 @@
+import { clsx, type ClassValue } from "clsx";
+import { twMerge } from "tailwind-merge";
 import { RegExpMatcher, englishDataset, englishRecommendedTransformers } from "obscenity";
 
 import type { User } from "@prisma/client";
+
+export function cn(...inputs: ClassValue[]) {
+  return twMerge(clsx(inputs));
+}
 
 export function formatName(fullName: User["name"] | undefined): string {
   if (!fullName) return "Anonymous User";
