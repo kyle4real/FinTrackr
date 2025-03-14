@@ -5,7 +5,7 @@ export async function SignInButton() {
     <form
       action={async () => {
         "use server";
-        await signIn("github");
+        await signIn("github", { redirectTo: "/dashboard" });
       }}
     >
       <button className="inline-flex items-center gap-2 bg-[#24292F] hover:bg-[#24292F]/90 text-white px-6 py-2.5 rounded-lg font-medium transition-colors">

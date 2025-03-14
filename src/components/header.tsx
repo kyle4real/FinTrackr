@@ -4,6 +4,7 @@ import { Session } from "next-auth";
 import Image from "next/image";
 import Link from "next/link";
 import { SignInButton, SignOutButton } from "./auth";
+import { DashboardLink } from "./dashboard-link";
 
 export const HEADER_HEIGHT = "64px";
 
@@ -23,7 +24,10 @@ export async function Header(props: HeaderProps) {
             Transaction Map
           </Link>
         </div>
-        <div>{session?.user ? <UserMenu user={session.user} /> : <SignInButton />}</div>
+        <div className="flex items-center gap-3">
+          {session?.user && <DashboardLink />}
+          {session?.user ? <UserMenu user={session.user} /> : <SignInButton />}
+        </div>
       </div>
     </header>
   );
