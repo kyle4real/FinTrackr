@@ -1,7 +1,11 @@
+import { auth } from "@/auth";
+import { PlaidLinkButton } from "@/components/plaid-link";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
+import { createPlaidLinkToken } from "@/lib/actions/user";
 import { cn } from "@/lib/utils";
 import { ChevronRight, Plus } from "lucide-react";
+import { redirect } from "next/navigation";
 
 const connectedItems = [
   {
@@ -57,7 +61,18 @@ const formatCents = (amount: number) => {
   return cents.toString().padStart(2, "0");
 };
 
-export default function Page() {
+export default async function Page() {
+  const session = await auth();
+
+  if (!session?.user) {
+    return redirect("/");
+  }
+
+  const token = await createPlaidLinkToken({
+    id: session.user.id,
+    name: session.user.name,
+  });
+
   return (
     <div className="px-6 py-4">
       <div>
@@ -98,28 +113,35 @@ export default function Page() {
             </div>
           </Card>
         ))}
-        {/* <PlaidLinkButton token={}> */}
-        <Card
-          className={cn(
-            "h-[175px] w-[300px] overflow-hidden rounded-2xl p-6 flex flex-col",
-            "bg-gradient-to-br from-white/60 to-white/30 dark:from-white/10 dark:to-white/5",
-            "backdrop-blur-md shadow-[0_8px_30px_rgb(0,0,0,0.06)]",
-            "border border-white/40 dark:border-white/10",
-            "relative"
-          )}
+        <PlaidLinkButton
+          token={token}
+          onSuccess={async (publicToken, metadata) => {
+            "use server";
+
+            return "";
+          }}
         >
-          {/* Content */}
-          <div className="relative z-10 flex flex-col items-center">
-            <div className="size-9 rounded-full flex backdrop-blur-sm  items-center justify-center mb-4">
-              <Plus className="size-6 text-primary" />
+          <Card
+            className={cn(
+              "h-[175px] w-[300px] overflow-hidden rounded-2xl p-6 flex flex-col",
+              "bg-gradient-to-br from-white/60 to-white/30 dark:from-white/10 dark:to-white/5",
+              "backdrop-blur-md shadow-[0_8px_30px_rgb(0,0,0,0.06)]",
+              "border border-white/40 dark:border-white/10",
+              "relative"
+            )}
+          >
+            {/* Content */}
+            <div className="relative z-10 flex flex-col items-center">
+              <div className="size-9 rounded-full flex backdrop-blur-sm  items-center justify-center mb-4">
+                <Plus className="size-6 text-primary" />
+              </div>
+              <h3 className="font-medium text-lg">Link New Account</h3>
+              <p className="text-sm text-muted-foreground mt-1 text-center max-w-[200px]">
+                Connect your bank or investment accounts
+              </p>
             </div>
-            <h3 className="font-medium text-lg">Link New Account</h3>
-            <p className="text-sm text-muted-foreground mt-1 text-center max-w-[200px]">
-              Connect your bank or investment accounts
-            </p>
-          </div>
-        </Card>
-        {/* </PlaidLinkButton> */}
+          </Card>
+        </PlaidLinkButton>
       </div>
     </div>
   );

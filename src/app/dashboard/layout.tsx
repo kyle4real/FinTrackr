@@ -8,7 +8,7 @@ import { redirect, RedirectType } from "next/navigation";
 export default async function Layout({ children }: { children: React.ReactNode }) {
   const session = await auth();
 
-  if (!session) {
+  if (!session?.user) {
     return redirect("/", RedirectType.replace);
   }
 

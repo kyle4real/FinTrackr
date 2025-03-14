@@ -1,14 +1,13 @@
-import { User } from "@prisma/client";
 import { plaidClient } from "../plaid";
 import { CountryCode, Products } from "plaid";
 
-export async function createPlaidLinkToken(user: User) {
+export async function createPlaidLinkToken(data: { id: string; name: string }) {
   try {
     const res = await plaidClient.linkTokenCreate({
       user: {
-        client_user_id: user.id,
+        client_user_id: data.id,
       },
-      client_name: user.name || "Anonymous User",
+      client_name: data.name,
       products: [Products.Auth],
       language: "en",
       country_codes: [CountryCode.Us],
@@ -19,5 +18,21 @@ export async function createPlaidLinkToken(user: User) {
     return link;
   } catch (error) {
     console.error(error);
+    return null;
+  }
+}
+
+export async function createBankAccount() {}
+
+export async function exchangePublicToken(publicToken: string) {
+  try {
+    const res = await plaidClient.itemPublicTokenExchange({
+      public_token: publicToken,
+    });
+
+    return res.data;
+  } catch (error) {
+    console.error(error);
+    return null;
   }
 }

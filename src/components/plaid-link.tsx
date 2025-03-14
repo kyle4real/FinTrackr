@@ -1,8 +1,10 @@
+"use client";
+
 import { PlaidLinkOnSuccess, usePlaidLink } from "react-plaid-link";
 
 export type PlaidLinkProps = {
   children: React.ReactNode;
-  token: string;
+  token: string | null;
   onSuccess: PlaidLinkOnSuccess;
 };
 
@@ -13,7 +15,11 @@ export function PlaidLinkButton(props: PlaidLinkProps) {
   });
 
   return (
-    <button onClick={() => open()} className="cursor-pointer" disabled={!ready}>
+    <button
+      onClick={() => open()}
+      className="not-disabled:cursor-pointer disabled:cursor-not-allowed"
+      disabled={!ready}
+    >
       {props.children}
     </button>
   );
