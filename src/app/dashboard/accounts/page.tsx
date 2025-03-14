@@ -2,49 +2,11 @@ import { auth } from "@/auth";
 import { PlaidLinkButton } from "@/components/plaid-link";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
+import { getAccounts } from "@/lib/actions/bank";
 import { createPlaidLinkToken } from "@/lib/actions/user";
 import { cn } from "@/lib/utils";
 import { ChevronRight, Plus } from "lucide-react";
 import { redirect } from "next/navigation";
-
-const connectedItems = [
-  {
-    id: "1",
-    bankName: "Chase",
-    accountName: "Checking",
-    balance: 1000,
-    currency: "USD",
-    color: "from-blue-500 to-blue-600",
-    lastFour: "1234",
-  },
-  {
-    id: "2",
-    bankName: "Chase",
-    accountName: "Savings",
-    balance: 5000,
-    currency: "USD",
-    color: "from-emerald-500 to-emerald-600",
-    lastFour: "5678",
-  },
-  {
-    id: "3",
-    bankName: "Wells Fargo",
-    accountName: "Checking",
-    balance: 2000,
-    currency: "USD",
-    color: "from-purple-500 to-purple-600",
-    lastFour: "9012",
-  },
-  {
-    id: "4",
-    bankName: "Wells Fargo",
-    accountName: "Savings",
-    balance: 3000,
-    currency: "USD",
-    color: "from-amber-500 to-amber-600",
-    lastFour: "3456",
-  },
-];
 
 const formatCurrency = (amount: number) => {
   return new Intl.NumberFormat("en-US", {
@@ -68,6 +30,8 @@ export default async function Page() {
     return redirect("/");
   }
 
+  const { accounts } = await getAccounts(session.user.id);
+
   const token = await createPlaidLinkToken({
     id: session.user.id,
     name: session.user.name,
@@ -76,10 +40,12 @@ export default async function Page() {
   return (
     <div className="px-6 py-4">
       <div>
-        <h1 className="text-3xl font-semibold tracking-tight mb-6">You have {connectedItems.length} linked accounts</h1>
+        <h1 className="text-3xl font-semibold tracking-tight mb-6">
+          You have {accounts.length} linked account{accounts.length === 1 ? "" : "s"}
+        </h1>
       </div>
       <div className="flex flex-wrap gap-4">
-        {connectedItems.map((account) => (
+        {accounts.map((account) => (
           <Card
             key={account.id}
             className={cn(
@@ -93,18 +59,18 @@ export default async function Page() {
             <div className="flex justify-between items-start mb-2">
               <div className="backdrop-blur-sm rounded-full px-3 py-1 text-xs font-medium flex items-center gap-1.5">
                 {/* {getAccountIcon(account.accountType)} */}
-                {account.accountName}
+                {account.subtype}
               </div>
-              <div className="text-foreground/80 text-sm font-medium">•••• {account.lastFour}</div>
+              <div className="text-foreground/80 text-sm font-medium">•••• {account.mask}</div>
             </div>
 
             <div className="mt-auto">
               <div className="flex items-baseline mb-1">
-                <span className="text-2xl font-bold">{formatCurrency(account.balance)}</span>
-                <span className="text-foreground/80 ml-1 text-lg">.{formatCents(account.balance)}</span>
+                <span className="text-2xl font-bold">{formatCurrency(account.currentBalance)}</span>
+                <span className="text-foreground/80 ml-1 text-lg">.{formatCents(account.currentBalance)}</span>
               </div>
               <div className="flex justify-between items-center">
-                <h3 className="font-medium text-foreground/90 text-lg">{account.bankName}</h3>
+                <h3 className="font-medium text-foreground/90 text-lg">{account.name}</h3>
                 <Button size="icon" variant="ghost" className="size-8 rounded-full backdrop-blur-sm cursor-pointer">
                   <ChevronRight className="h-4 w-4" />
                   <span className="sr-only">View details</span>
@@ -113,14 +79,7 @@ export default async function Page() {
             </div>
           </Card>
         ))}
-        <PlaidLinkButton
-          token={token}
-          onSuccess={async (publicToken, metadata) => {
-            "use server";
-
-            return "";
-          }}
-        >
+        <PlaidLinkButton token={token} userId={session.user.id}>
           <Card
             className={cn(
               "h-[175px] w-[300px] overflow-hidden rounded-2xl p-6 flex flex-col",

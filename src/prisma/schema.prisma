@@ -67,6 +67,12 @@ model BankAccount {
   accountId   String
   accessToken String
 
+  name         String
+  officialName String?
+  type         String
+  subtype      String?
+  mask         String?
+
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
