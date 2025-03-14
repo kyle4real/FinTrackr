@@ -20,7 +20,7 @@ export async function Header(props: HeaderProps) {
       <div className="max-w-7xl mx-auto px-4 h-full flex items-center justify-between gap-3">
         <div className="flex items-center gap-3">
           {props.leftActions}
-          <Link href="/" className="text-xl font-bold text-gray-900">
+          <Link href="/" className="text-xl font-bold text-gray-900 tracking-tighter">
             Transaction Map
           </Link>
         </div>
