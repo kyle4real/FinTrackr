@@ -38,7 +38,7 @@ export default async function Page() {
   });
 
   return (
-    <div className="px-6 py-4">
+    <div>
       <div>
         <h1 className="text-3xl font-semibold tracking-tight mb-6">
           You have {accounts.length} linked account{accounts.length === 1 ? "" : "s"}

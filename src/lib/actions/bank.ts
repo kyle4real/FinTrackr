@@ -54,5 +54,3 @@ export async function getAccounts(userId: string) {
     };
   }
 }
-
-// export async function getTransactions
