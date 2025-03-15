@@ -1,4 +1,4 @@
 export const CACHE_TAGS = {
-  ACCOUNTS: "accounts",
+  LINKED_INSTITUTIONS: "accounts",
   TRANSACTIONS: "transactions",
 } as const;

@@ -5,6 +5,7 @@ import { CountryCode, Products } from "plaid";
 import prisma from "../prisma";
 import { revalidateTag } from "next/cache";
 import { CACHE_TAGS } from "../constants";
+import { PlaidLinkOnSuccessMetadata } from "react-plaid-link";
 
 export async function createPlaidLinkToken(data: { id: string; name: string }) {
   try {
@@ -27,45 +28,46 @@ export async function createPlaidLinkToken(data: { id: string; name: string }) {
   }
 }
 
-export async function createBankAccount(publicToken: string, userId: string) {
+export async function linkInstitution(publicToken: string, metadata: PlaidLinkOnSuccessMetadata, userId: string) {
   try {
-    const {
-      data: { item_id: itemId, access_token: accessToken },
-    } = await plaidClient.itemPublicTokenExchange({
-      public_token: publicToken,
-    });
+    const institutionId = metadata.institution?.institution_id;
 
-    const {
-      data: { accounts },
-    } = await plaidClient.accountsGet({
-      access_token: accessToken,
-    });
+    if (institutionId) {
+      const isLinkedAlready = await prisma.linkedInstitution.findFirst({
+        where: {
+          institutionId: institutionId,
+          userId: userId,
+        },
+      });
 
-    if (!accounts || accounts.length === 0) {
-      return null;
+      if (isLinkedAlready) {
+        return { error: "Institution already linked", severity: "warning" };
+      }
     }
 
-    const account = accounts[0];
+    const {
+      data: { item_id: itemId, access_token: accessToken },
+    } = await plaidClient.itemPublicTokenExchange({ public_token: publicToken });
 
-    const data = await prisma.bankAccount.create({
+    const {
+      data: { item },
+    } = await plaidClient.itemGet({ access_token: accessToken });
+
+    const data = await prisma.linkedInstitution.create({
       data: {
-        bankId: itemId,
+        itemId: itemId,
+        institutionId: item.institution_id!,
+        institutionName: item.institution_name!,
         accessToken: accessToken,
-        accountId: account.account_id,
         userId: userId,
-        name: account.name,
-        mask: account.mask,
-        officialName: account.official_name,
-        subtype: account.subtype,
-        type: account.type,
       },
     });
 
-    revalidateTag(CACHE_TAGS.ACCOUNTS);
+    revalidateTag(CACHE_TAGS.LINKED_INSTITUTIONS);
 
-    return data;
+    return { data };
   } catch (error) {
     console.error(error);
-    return null;
+    return { error: "There was an error", severity: "error" };
   }
 }

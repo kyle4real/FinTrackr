@@ -3,54 +3,56 @@ import { plaidClient } from "../plaid";
 import prisma from "../prisma";
 import { CACHE_TAGS } from "../constants";
 
-export async function getAccounts(userId: string) {
+export async function getInstitutions(userId: string) {
   "use cache";
-  cacheTag(CACHE_TAGS.ACCOUNTS, userId);
+  cacheTag(CACHE_TAGS.LINKED_INSTITUTIONS, userId);
 
   try {
-    const banks = await prisma.bankAccount.findMany({ where: { userId: userId } });
+    const linkedInstitutions = await prisma.linkedInstitution.findMany({ where: { userId: userId } });
 
-    const accounts = await Promise.all(
-      banks.map(async (bank) => {
+    const institutions = await Promise.all(
+      linkedInstitutions.map(async (institution) => {
         const {
           data: { accounts, item },
-        } = await plaidClient.accountsGet({ access_token: bank.accessToken });
-        const account = accounts[0];
+        } = await plaidClient.accountsGet({ access_token: institution.accessToken });
 
-        // const institution = await plaidClient.institutionsGetById({
-        //   institution_id: item.institution_id!,
-        //   country_codes: [CountryCode.Us],
-        // });
+        const leanAccounts = accounts.map((a) => {
+          return {
+            id: a.account_id,
+            name: a.name,
+            type: a.type,
+            subtype: a.subtype,
+            mask: a.mask,
+            currentBalance: a.balances.current ?? 0,
+            availableBalance: a.balances.available ?? 0,
+          };
+        });
+
+        const totalInstitutionBalance = leanAccounts.reduce((acc, a) => acc + a.currentBalance, 0);
 
         return {
-          accountId: bank.accountId,
-          availableBalance: account.balances.available ?? 0,
-          currentBalance: account.balances.current ?? 0,
           institutionId: item.institution_id!,
-          name: account.name,
-          officialName: account.official_name,
-          mask: account.mask,
-          type: account.type,
-          subtype: account.subtype,
-
-          id: bank.id,
+          institutionName: item.institution_name!,
+          accounts: leanAccounts,
+          totalAccounts: leanAccounts.length,
+          totalInstitutionBalance: totalInstitutionBalance,
         };
       })
     );
 
-    const totalCurrentBalance = accounts.reduce((acc, a) => acc + a.currentBalance, 0);
-
     return {
-      totalAccounts: accounts.length,
-      totalCurrentBalance: totalCurrentBalance,
-      accounts: accounts,
+      institutions: institutions,
+      totalInstitutions: institutions.length,
+      totalAccounts: institutions.reduce((acc, a) => acc + a.totalAccounts, 0),
+      totalCurrentBalance: institutions.reduce((acc, a) => acc + a.totalInstitutionBalance, 0),
     };
   } catch (error) {
     console.error(error);
     return {
+      institutions: [],
+      totalInstitutions: 0,
       totalAccounts: 0,
       totalCurrentBalance: 0,
-      accounts: [],
     };
   }
 }

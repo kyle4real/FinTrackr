@@ -1,8 +1,10 @@
 "use client";
 
-import { createBankAccount } from "@/lib/actions/user";
+import { linkInstitution } from "@/lib/actions/user";
 import { useCallback } from "react";
 import { PlaidLinkOnSuccess, usePlaidLink } from "react-plaid-link";
+import { Button } from "./ui/button";
+import { toast } from "sonner";
 
 export type PlaidLinkProps = {
   children: React.ReactNode;
@@ -12,8 +14,20 @@ export type PlaidLinkProps = {
 
 export function PlaidLinkButton(props: PlaidLinkProps) {
   const onSuccess = useCallback<PlaidLinkOnSuccess>(
-    (publicToken) => {
-      createBankAccount(publicToken, props.userId);
+    async (publicToken, metadata) => {
+      const res = await linkInstitution(publicToken, metadata, props.userId);
+
+      if (res.error) {
+        if (res.severity === "warning") {
+          toast.warning(res.error);
+        } else if (res.severity === "error") {
+          toast.error(res.error);
+        }
+
+        return;
+      }
+
+      toast.success("Institution linked successfully");
     },
     [props.userId]
   );
@@ -24,12 +38,12 @@ export function PlaidLinkButton(props: PlaidLinkProps) {
   });
 
   return (
-    <button
+    <Button
       onClick={() => open()}
       className="not-disabled:cursor-pointer disabled:cursor-not-allowed"
       disabled={!ready}
     >
       {props.children}
-    </button>
+    </Button>
   );
 }
