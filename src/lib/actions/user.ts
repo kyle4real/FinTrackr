@@ -64,6 +64,7 @@ export async function linkInstitution(publicToken: string, metadata: PlaidLinkOn
     });
 
     revalidateTag(CACHE_TAGS.LINKED_INSTITUTIONS);
+    revalidateTag(CACHE_TAGS.TRANSACTIONS);
 
     return { data };
   } catch (error) {

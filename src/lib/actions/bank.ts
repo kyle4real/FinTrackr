@@ -84,7 +84,9 @@ export async function getTransactions(userId: string) {
     );
 
     // Flatten arrays
-    const allTransactions = allTransactionsWithBalances.flatMap((item) => item.transactions);
+    const allTransactions = allTransactionsWithBalances
+      .flatMap((item) => item.transactions)
+      .sort((a, b) => b.date.localeCompare(a.date));
     const allAccounts = allTransactionsWithBalances.flatMap((item) => item.accounts);
 
     // Initialize account balances and total running balance
