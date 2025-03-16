@@ -15,5 +15,12 @@ export default async function Page() {
     await getInstitutions(session.user.id),
   ]);
 
-  return <TransactionsTable transactionsResponse={transactionsResponse} institutionsResponse={institutionsResponse} />;
+  return (
+    <div>
+      <div className="flex justify-between items-center mb-6">
+        <h1 className="text-3xl font-bold tracking-tight">Your transactions</h1>
+      </div>
+      <TransactionsTable transactionsResponse={transactionsResponse} institutionsResponse={institutionsResponse} />
+    </div>
+  );
 }

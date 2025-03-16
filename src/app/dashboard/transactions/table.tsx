@@ -1,5 +1,6 @@
 "use client";
 
+import { Badge } from "@/components/ui/badge";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { GetInstitutionsResponse, GetTransactionsResponse } from "@/lib/actions/bank";
 import { format } from "date-fns";
@@ -24,13 +25,13 @@ export function TransactionsTable(props: TransactionsTableProps) {
     <Table>
       <TableHeader>
         <TableRow>
+          <TableHead>Date</TableHead>
           <TableHead>Institution</TableHead>
           <TableHead>Account</TableHead>
           <TableHead>Amount</TableHead>
-          <TableHead>Total Balance</TableHead>
-          <TableHead>Account Balance</TableHead>
+          <TableHead>Acct Bal</TableHead>
+          <TableHead>Net Worth</TableHead>
           <TableHead>Category</TableHead>
-          <TableHead>Date</TableHead>
           <TableHead>Merchant</TableHead>
           <TableHead>Channel</TableHead>
         </TableRow>
@@ -45,13 +46,21 @@ export function TransactionsTable(props: TransactionsTableProps) {
 
           return (
             <TableRow key={transaction.transaction_id}>
-              <TableCell>{institution?.institutionName}</TableCell>
-              <TableCell>{account?.name}</TableCell>
-              <TableCell>{formatCurrency(transaction.amount)}</TableCell>
-              <TableCell>{formatCurrency(transaction.total_running_balance)}</TableCell>
-              <TableCell>{formatCurrency(transaction.running_balance)}</TableCell>
-              <TableCell>{transaction.personal_finance_category?.primary}</TableCell>
               <TableCell>{transaction.date ? format(transaction.date, "MM/dd/yyyy") : null}</TableCell>
+              <TableCell>
+                <Badge>{institution?.institutionName}</Badge>
+              </TableCell>
+              <TableCell>
+                <Badge variant="outline">{account?.name}</Badge>
+              </TableCell>
+              <TableCell className="font-medium">{formatCurrency(transaction.amount)}</TableCell>
+              <TableCell>{formatCurrency(transaction.running_balance)}</TableCell>
+              <TableCell>{formatCurrency(transaction.total_running_balance)}</TableCell>
+              <TableCell>
+                <Badge variant="outline" className="lowercase">
+                  {transaction.personal_finance_category?.primary}
+                </Badge>
+              </TableCell>
               <TableCell>{transaction.merchant_name}</TableCell>
               <TableCell>{transaction.payment_channel}</TableCell>
             </TableRow>
