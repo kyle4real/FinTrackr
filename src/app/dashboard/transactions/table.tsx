@@ -27,7 +27,8 @@ export function TransactionsTable(props: TransactionsTableProps) {
           <TableHead>Institution</TableHead>
           <TableHead>Account</TableHead>
           <TableHead>Amount</TableHead>
-          <TableHead>Balance</TableHead>
+          <TableHead>Total Balance</TableHead>
+          <TableHead>Account Balance</TableHead>
           <TableHead>Category</TableHead>
           <TableHead>Date</TableHead>
           <TableHead>Merchant</TableHead>
@@ -47,7 +48,8 @@ export function TransactionsTable(props: TransactionsTableProps) {
               <TableCell>{institution?.institutionName}</TableCell>
               <TableCell>{account?.name}</TableCell>
               <TableCell>{formatCurrency(transaction.amount)}</TableCell>
-              <TableCell>{formatCurrency(transaction.runningBalance)}</TableCell>
+              <TableCell>{formatCurrency(transaction.total_running_balance)}</TableCell>
+              <TableCell>{formatCurrency(transaction.running_balance)}</TableCell>
               <TableCell>{transaction.personal_finance_category?.primary}</TableCell>
               <TableCell>{transaction.date ? format(transaction.date, "MM/dd/yyyy") : null}</TableCell>
               <TableCell>{transaction.merchant_name}</TableCell>
