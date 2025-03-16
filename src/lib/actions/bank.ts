@@ -56,3 +56,68 @@ export async function getInstitutions(userId: string) {
     };
   }
 }
+
+export type GetInstitutionsResponse = Awaited<ReturnType<typeof getInstitutions>>;
+
+export async function getTransactions(userId: string) {
+  "use cache";
+  cacheTag(CACHE_TAGS.TRANSACTIONS, userId);
+
+  try {
+    const linkedInstitutions = await prisma.linkedInstitution.findMany({ where: { userId: userId } });
+
+    const transactions = await Promise.all(
+      linkedInstitutions.map(async (institution) => {
+        const {
+          data: { transactions, accounts },
+        } = await plaidClient.transactionsGet({
+          access_token: institution.accessToken,
+          start_date: "2021-01-01",
+          end_date: "2025-03-15",
+        });
+
+        const accountBalances: Record<string, number> = {};
+        accounts.forEach((account) => {
+          accountBalances[account.account_id] = account.balances.current ?? 0;
+        });
+
+        const transactionsWithRunningBalanaces = transactions.map((transaction) => {
+          const accountId = transaction.account_id;
+          if (!accountBalances[accountId]) {
+            return {
+              ...transaction,
+              runningBalance: 0,
+            };
+          }
+
+          accountBalances[accountId] -= transaction.amount;
+
+          return {
+            ...transaction,
+            runningBalance: accountBalances[accountId],
+          };
+        });
+
+        return transactionsWithRunningBalanaces.map((t) => ({
+          ...t,
+          institutionId: institution.institutionId,
+        }));
+      })
+    );
+
+    const allTransactions = transactions.flat().sort((a, b) => (a.date > b.date ? -1 : 1));
+
+    return {
+      transactions: allTransactions,
+      totalTransactions: allTransactions.length,
+    };
+  } catch (error) {
+    console.error(error);
+    return {
+      transactions: [],
+      totalTransactions: 0,
+    };
+  }
+}
+
+export type GetTransactionsResponse = Awaited<ReturnType<typeof getTransactions>>;

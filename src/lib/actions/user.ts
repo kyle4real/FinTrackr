@@ -14,7 +14,7 @@ export async function createPlaidLinkToken(data: { id: string; name: string }) {
         client_user_id: data.id,
       },
       client_name: data.name,
-      products: [Products.Auth],
+      products: [Products.Auth, Products.Transactions],
       language: "en",
       country_codes: [CountryCode.Us],
     });
