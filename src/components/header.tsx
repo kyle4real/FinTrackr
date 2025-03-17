@@ -21,7 +21,7 @@ export async function Header(props: HeaderProps) {
         <div className="flex items-center gap-3">
           {props.leftActions}
           <Link href="/" className="text-xl font-bold text-gray-900 tracking-tighter">
-            Transaction Map
+            FinTrackr
           </Link>
         </div>
         <div className="flex items-center gap-3">
