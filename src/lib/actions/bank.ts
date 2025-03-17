@@ -59,6 +59,8 @@ export async function getInstitutions(userId: string) {
 
 export type GetInstitutionsResponse = Awaited<ReturnType<typeof getInstitutions>>;
 
+const start_date = "2010-01-01";
+const end_date = "2025-03-15";
 export async function getTransactions(userId: string) {
   "use cache";
   cacheTag(CACHE_TAGS.TRANSACTIONS, userId);
@@ -72,8 +74,8 @@ export async function getTransactions(userId: string) {
           data: { transactions, accounts },
         } = await plaidClient.transactionsGet({
           access_token: institution.accessToken,
-          start_date: "2021-01-01",
-          end_date: "2025-03-15",
+          start_date: start_date,
+          end_date: end_date,
         });
 
         return {
