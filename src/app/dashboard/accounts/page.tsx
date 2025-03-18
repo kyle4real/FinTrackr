@@ -1,5 +1,6 @@
 import { auth } from "@/auth";
 import { PlaidLinkButton } from "@/components/plaid-link";
+import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { getInstitutions } from "@/lib/actions/bank";
@@ -65,10 +66,10 @@ export default async function Page() {
                   )}
                 >
                   <div className="flex justify-between items-start mb-2">
-                    <div className="backdrop-blur-sm rounded-full px-3 py-1 text-xs font-medium flex items-center gap-1.5">
-                      {/* {getAccountIcon(account.accountType)} */}
+                    {/* <div className="backdrop-blur-sm rounded-full px-3 py-1 text-xs font-medium flex items-center gap-1.5">
                       {account.subtype}
-                    </div>
+                    </div> */}
+                    <Badge variant="outline">{account.subtype}</Badge>
                     <div className="text-foreground/80 text-sm font-medium">•••• {account.mask}</div>
                   </div>
 

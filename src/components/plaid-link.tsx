@@ -10,6 +10,7 @@ export type PlaidLinkProps = {
   children: React.ReactNode;
   token: string | null;
   userId: string;
+  onComplete?: () => Promise<void>;
 };
 
 export function PlaidLinkButton(props: PlaidLinkProps) {
@@ -27,9 +28,12 @@ export function PlaidLinkButton(props: PlaidLinkProps) {
         return;
       }
 
+      if (props.onComplete) {
+        props.onComplete();
+      }
       toast.success("Institution linked successfully");
     },
-    [props.userId]
+    [props]
   );
 
   const { open, ready } = usePlaidLink({
