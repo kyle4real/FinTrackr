@@ -108,6 +108,12 @@ export default async function Page() {
           />
         </BentoGrid>
       </div>
+      <footer className="border-t border-zinc-800 bg-zinc-950 py-6 text-center text-sm text-zinc-400 px-4">
+        <p>
+          This is a sandbox application built for demonstration purposes only. Data shown is not real and should not be
+          used for financial decision-making.
+        </p>
+      </footer>
     </div>
   );
 }

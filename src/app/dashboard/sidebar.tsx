@@ -51,7 +51,14 @@ export function DashboardSidebar() {
           ))}
         </SidebarMenu>
       </SidebarContent>
-      <SidebarFooter />
+      <SidebarFooter>
+        <footer className="p-2 text-center">
+          <p className="text-xs text-muted-foreground">
+            This is a sandbox application built for demonstration purposes only. Data shown is not real and should not
+            be used for financial decision-making.
+          </p>
+        </footer>
+      </SidebarFooter>
     </Sidebar>
   );
 }
