@@ -10,7 +10,7 @@ install:
 generate-prisma:
 	npx prisma generate
 
-start: install docker-setup generate-prisma
+start: docker-setup install generate-prisma
 	npm run dev
 
 stop: docker-down
